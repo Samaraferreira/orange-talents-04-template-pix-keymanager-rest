@@ -21,11 +21,11 @@ class GlobalExceptionHandler : ExceptionHandler<StatusRuntimeException, HttpResp
 
         val (httpStatus, message) = when (statusCode) {
             Status.NOT_FOUND.code -> Pair(HttpStatus.NOT_FOUND, statusDescription)
-            Status.INVALID_ARGUMENT.code -> Pair(HttpStatus.BAD_REQUEST, "Invalid request params") // TODO: melhoria: extrair detalhes do erro
+            Status.INVALID_ARGUMENT.code -> Pair(HttpStatus.BAD_REQUEST, "Invalid argument") // TODO: melhoria: extrair detalhes do erro
             Status.ALREADY_EXISTS.code -> Pair(HttpStatus.UNPROCESSABLE_ENTITY, statusDescription)
             else ->  {
                 LOGGER.error("Unexpected error occurred '${exception.javaClass.name}'", exception)
-                Pair(HttpStatus.INTERNAL_SERVER_ERROR, "Could not complete your request because an unexpected error occurred: $statusDescription ($statusCode)")
+                Pair(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred: $statusDescription ($statusCode)")
             }
         }
 
@@ -33,5 +33,4 @@ class GlobalExceptionHandler : ExceptionHandler<StatusRuntimeException, HttpResp
             .status<JsonError>(httpStatus)
             .body(JsonError(message))
     }
-
 }
