@@ -16,16 +16,16 @@ import javax.validation.Valid
 @Validated
 @Controller("api/v1/clients/{clientId}")
 class RegisterPixKeyController(
-    @Inject val gRpcClient: KeyManagerRegisterServiceGrpc.KeyManagerRegisterServiceBlockingStub
+    @Inject val grpcClient: KeyManagerRegisterServiceGrpc.KeyManagerRegisterServiceBlockingStub
 ) {
 
     private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
     @Post("/pix")
-    fun register(@PathVariable clientId: UUID, @Valid @Body request: PixKeyRequest): MutableHttpResponse<String> {
+    fun register(@PathVariable clientId: UUID, @Valid @Body request: PixKeyRequest): HttpResponse<Any> {
 
         LOGGER.info("[$clientId] creating a new pix key with $request")
-        val grpcResponse = gRpcClient.register(request.toModel(clientId.toString()))
+        val grpcResponse = grpcClient.register(request.toModel(clientId.toString()))
 
         return HttpResponse.created(location(clientId, grpcResponse.pixId))
     }

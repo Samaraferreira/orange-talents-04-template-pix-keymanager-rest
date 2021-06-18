@@ -4,7 +4,7 @@ import br.com.zup.edu.AccountType
 import br.com.zup.edu.CreateKeyRequest
 import br.com.zup.edu.KeyType
 import io.micronaut.core.annotation.Introspected
-import io.micronaut.validation.validator.constraints.EmailValidator
+import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator
 import org.hibernate.validator.internal.constraintvalidators.hv.br.CPFValidator
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
@@ -13,8 +13,8 @@ import br.com.zup.edu.shared.validations.ValidPixKey
 @Introspected
 @ValidPixKey
 data class PixKeyRequest(
-    @field:Size(max = 77) val keyValue: String?,
     @field:NotNull val keyType: KeyTypeRequest?,
+    @field:Size(max = 77) val keyValue: String?,
     @field:NotNull val accountType: AccountTypeRequest?
 ) {
     fun toModel(clientId: String): CreateKeyRequest {
@@ -28,7 +28,7 @@ data class PixKeyRequest(
 }
 
 enum class KeyTypeRequest(val grpcType: KeyType) {
-    CPF(KeyType.EMAIL) {
+    CPF(KeyType.CPF) {
         override fun isValid(key: String?): Boolean {
             if (key.isNullOrBlank()) return false
 
