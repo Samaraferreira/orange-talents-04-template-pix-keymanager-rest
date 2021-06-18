@@ -14,7 +14,7 @@ import javax.inject.Inject
 @MicronautTest
 internal class RemovePixKeyControllerTest {
 
-    @Inject
+    @field:Inject
     lateinit var removeStub: KeyManagerDeleteServiceGrpc.KeyManagerDeleteServiceBlockingStub
 
     @field:Inject

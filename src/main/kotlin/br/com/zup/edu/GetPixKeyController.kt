@@ -10,15 +10,17 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.MutableHttpResponse
 import org.slf4j.LoggerFactory
 
-@Controller("api/v1/clients")
+@Controller("api/v1/clients/{clientId}")
 class GetPixKeyController(
     @Inject val grpcClient: KeyManagerGetServiceGrpc.KeyManagerGetServiceBlockingStub
 ) {
 
     private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
-    @Get("/{clientId}/pix/{pixId}")
+    @Get("/pix/{pixId}")
     fun getPixKeyByPixId(clientId: UUID, pixId: UUID): HttpResponse<DetailsPixKeyResponse> {
+        LOGGER.info("[$clientId] looking for a key with the pixId: $pixId")
+
         val request = GetKeyRequest.newBuilder()
             .setPixId(FilterByPixId.newBuilder()
                 .setClientId(clientId.toString())
@@ -32,14 +34,4 @@ class GetPixKeyController(
         return HttpResponse.ok(DetailsPixKeyResponse(response))
     }
 
-    @Get("/pix/{keyValue}")
-    fun getPixKeyByValue(keyValue: String): HttpResponse<DetailsPixKeyResponse> {
-        val request = GetKeyRequest.newBuilder()
-            .setKey(keyValue)
-            .build()
-
-        val response = grpcClient.get(request)
-
-        return HttpResponse.ok(DetailsPixKeyResponse(response))
-    }
 }
