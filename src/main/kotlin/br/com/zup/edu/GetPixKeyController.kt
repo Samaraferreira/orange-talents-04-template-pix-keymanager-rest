@@ -6,13 +6,15 @@ import java.util.UUID
 import javax.inject.Inject
 import br.com.zup.edu.GetKeyRequest.FilterByPixId
 import br.com.zup.edu.dto.DetailsPixKeyResponse
+import br.com.zup.edu.dto.PixKeyResponse
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MutableHttpResponse
 import org.slf4j.LoggerFactory
 
 @Controller("api/v1/clients/{clientId}")
 class GetPixKeyController(
-    @Inject val grpcClient: KeyManagerGetServiceGrpc.KeyManagerGetServiceBlockingStub
+    @Inject val getPixKeyClient: KeyManagerGetServiceGrpc.KeyManagerGetServiceBlockingStub,
+    @Inject val listPixKeyClient: KeyManagerGetAllServiceGrpc.KeyManagerGetAllServiceBlockingStub
 ) {
 
     private val LOGGER = LoggerFactory.getLogger(this::class.java)
@@ -29,9 +31,24 @@ class GetPixKeyController(
             )
             .build()
 
-        val response = grpcClient.get(request)
+        val response = getPixKeyClient.get(request)
 
         return HttpResponse.ok(DetailsPixKeyResponse(response))
+    }
+
+    @Get("/pix")
+    fun listAllKeys(clientId: UUID): HttpResponse<List<PixKeyResponse>> {
+        LOGGER.info("[$clientId] looking for your pix keys")
+
+        val request = ListAllKeysRequest.newBuilder()
+            .setClientId(clientId.toString())
+            .build()
+
+        val response = listPixKeyClient.getAll(request)
+
+        return HttpResponse.ok(response.keysList.map {
+            key -> PixKeyResponse(key)
+        })
     }
 
 }
